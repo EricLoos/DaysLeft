@@ -238,7 +238,7 @@ void ShowDate(bool show, int display) {
 }
 //time_t t;
 
-byte DL2014_2015[] = {
+byte DL2015_2016[] = {
 
   180,179,178,177,177,177,176,175,174,173,172,172,172,171,170,
   169,168,167,167,167,167,166,165,164,163,163,163,162,161,160,
@@ -256,7 +256,7 @@ byte DL2014_2015[] = {
   47,47,47,47,47,46,45,44,43,43,43,42,41,40,39,38,38,38,37,36,
   35,34,33,33,33,32,31,30,29,28,28,28,27,26,25,24,23,23,23,22,
   21,20,19,18,18,18,17,16,15,14,13,13,13,12,11,10,9,8,8,8,7,6,
-  5,4,3,3,3,3,2,1
+  5,4,3,3,3,3,2,1,0
 };
 
 void printDays() {
@@ -266,7 +266,7 @@ void printDays() {
   for(int i=0;i<=n+2;i++) {
     cur = DateTime(Basedate.unixtime() + i * 86400L);
     //GetGregorian(BaseDayNo+i,&yr,&mo,&dy);
-    sprintf(tempString,"%3d %3d %5d %02d/%02d/%d", i, DL2014_2015[i], BaseDayNo+i, cur.month(), cur.day(), cur.year() );
+    sprintf(tempString,"%3d %3d %5d %02d/%02d/%d", i, DL2015_2016[i], BaseDayNo+i, cur.month(), cur.day(), cur.year() );
     Serial.println(tempString);
   }
 }
@@ -289,14 +289,14 @@ int GetDaysLeft(int year_, int month_, int day_, int hour_, int minute_ ) {
     if(month_>=8 && month_<=12 ) {
       //Serial.print("Base day no: "); Serial.print(BaseDayNo);
       //Serial.print(",   JDN: "); Serial.println(JulianDayNo);
-      r = DL2014_2015[0];
+      r = DL2015_2016[0];
       if(JulianDayNo>=BaseDayNo) {
         OffsetDayNo = JulianDayNo-BaseDayNo;
         if(OffsetDayNo>=0 && OffsetDayNo<=180 ) {
-          r = DL2014_2015[OffsetDayNo];
+          r = DL2015_2016[OffsetDayNo];
           time = hour_*100+minute_;
           if(time>=1430)
-            r = DL2014_2015[OffsetDayNo+1];
+            r = DL2015_2016[OffsetDayNo+1];
         }
         if(OffsetDayNo>180)
           r = 0;
@@ -311,10 +311,10 @@ int GetDaysLeft(int year_, int month_, int day_, int hour_, int minute_ ) {
     if(JulianDayNo>=BaseDayNo) {
       OffsetDayNo = JulianDayNo-BaseDayNo;
       if(OffsetDayNo>=0 && OffsetDayNo<=180 ) {
-        r = DL2014_2015[OffsetDayNo];
+        r = DL2015_2016[OffsetDayNo];
         time = hour_*100+minute_;
         if(time>=1430)
-          r = DL2014_2015[OffsetDayNo+1];
+          r = DL2015_2016[OffsetDayNo+1];
       }
       if(OffsetDayNo>180)
         r = 0;
