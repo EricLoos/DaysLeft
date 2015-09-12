@@ -1,3 +1,83 @@
+#include "Time.h"
+
+/* Define shift register pins used for seven segment display */
+#define LATCH_DIO 4
+#define CLK_DIO 7
+#define DATA_DIO 8
+
+
+#define BUTTON1 A1
+#define BUTTON2 A2
+#define BUTTON3 A3
+
+/*      1
+ *     aaaa
+ *    f    b  2
+ * 32 f    b
+ *     gggg      64
+ *    e    c  4
+ * 16 e    c
+ *     dddd
+ *      8
+ *
+ *  Segment byte maps for numbers 0 to 9
+ *
+ *  .gfedcda
+ *  1
+ *  2631
+ *  84268421
+                              0    1    2    3   4    5    6    7     8   9       */
+const byte SEGMENT_MAP[] = {0xC0, 0xF9, 0xA4, 0xB0, 0x99, 0x92, 0x82, 0xD8, 0x80, 0x90};
+/* Byte maps to select digit 1 to 4 */
+const byte SEGMENT_SELECT[] = {0xF1, 0xF2, 0xF4, 0xF8};
+
+const byte LED[] = {13, 12, 11, 10};
+
+char buffer[5];
+
+unsigned long Cur_ms_Count; // Stores the current time in ms
+unsigned long Last_ms_Count; // Stores the last time in ms the counter was last updated
+int Count; // Stores the value that will be displayed
+bool showDP = true;
+
+  int BaseDayNo, LastDayOfSchool;
+
+
+void setup ()
+{
+  showDP = true;
+   BaseDayNo = GetJD(2015,8,19);
+  LastDayOfSchool = GetJD(2016,6,2);
+
+  for (int i = 0; i < 4; i++) {
+    pinMode(LED[i], OUTPUT);
+    digitalWrite(LED[i], HIGH);
+
+  }
+  /* Set DIO pins to outputs */
+  pinMode(LATCH_DIO, OUTPUT);
+  pinMode(CLK_DIO, OUTPUT);
+  pinMode(DATA_DIO, OUTPUT);
+
+
+  pinMode(BUTTON1, INPUT);
+  digitalWrite(BUTTON1, HIGH);
+  pinMode(BUTTON2, INPUT);
+  digitalWrite(BUTTON2, HIGH);
+  pinMode(BUTTON3, INPUT);
+  digitalWrite(BUTTON3, HIGH);
+
+
+  /* Initiliase the registers used to store the crrent time and count */
+  Cur_ms_Count = millis();
+  Last_ms_Count = 0;
+  Count = 0;
+  Serial.begin(9600);
+  SetDateTime(__DATE__, __TIME__);
+  //setTime(12,48,0,29,8,15);
+}
+
+
 void SetDateTime( char *date, char *time ) {
   int hr, min, sec;
   int month, day, year;
