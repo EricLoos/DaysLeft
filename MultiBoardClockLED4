@@ -375,38 +375,8 @@ int GetDaysLeft(int year_, int month_, int day_, int hour_, int minute_ ) {
   int time;
   int JulianDayNo, OffsetDayNo; 
   JulianDayNo = GetJD(year_,month_,day_);
-  /*
-  if(year_==2014) {
-    if( month_==5 ) {
-      if(day_>0 && day_<=30)
-        r = GetDaysLeft(day_-1);
-        time = hour_*100+minute_;
-        if(time>=1430)
-          r=GetDaysLeft(day_);
-    }
-    if(month_>=8 && month_<=12 ) {
-      //Serial.print("Base day no: "); Serial.print(BaseDayNo);
-      //Serial.print(",   JDN: "); Serial.println(JulianDayNo);
-      r = DL2015_2016[0];
-      if(JulianDayNo>=BaseDayNo) {
-        OffsetDayNo = JulianDayNo-BaseDayNo;
-        if(OffsetDayNo>=0 && OffsetDayNo<=180 ) {
-          r = DL2015_2016[OffsetDayNo];
-          time = hour_*100+minute_;
-          if(time>=1430)
-            r = DL2015_2016[OffsetDayNo+1];
-        }
-        if(OffsetDayNo>180)
-          r = 0;
-      }    
-    }
-  }
-  */
+  
   if(year_>=2015) {
-    /*
-    int jd, y, m, d;
-    GetGregorian(jd,&y,&m,&d); 
-    */
     if(JulianDayNo>=BaseDayNo) {
       OffsetDayNo = JulianDayNo-BaseDayNo;
       if(OffsetDayNo>=0 && OffsetDayNo<=180 ) {
