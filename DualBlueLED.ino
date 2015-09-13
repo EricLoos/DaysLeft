@@ -278,6 +278,7 @@ int GetDaysLeft(int year_, int month_, int day_, int hour_, int minute_ ) {
   int time;
   int JulianDayNo, OffsetDayNo; 
   JulianDayNo = GetJD(year_,month_,day_);
+  /*
   if(year_==2014) {
     if( month_==5 ) {
       if(day_>0 && day_<=30)
@@ -303,7 +304,8 @@ int GetDaysLeft(int year_, int month_, int day_, int hour_, int minute_ ) {
       }    
     }
   }
-  if(year_==2015) {
+  */
+  if(year_>=2015) {
     /*
     int jd, y, m, d;
     GetGregorian(jd,&y,&m,&d); 
@@ -313,7 +315,7 @@ int GetDaysLeft(int year_, int month_, int day_, int hour_, int minute_ ) {
       if(OffsetDayNo>=0 && OffsetDayNo<=180 ) {
         r = DL2015_2016[OffsetDayNo];
         time = hour_*100+minute_;
-        if(time>=1430)
+        if(time>=1440)
           r = DL2015_2016[OffsetDayNo+1];
       }
       if(OffsetDayNo>180)
