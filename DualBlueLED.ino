@@ -39,12 +39,13 @@ struct ReturnDate  {
 
 
 #include <SPI.h> // Include the Arduino SPI library
-//#include <Time.h>
+#include <Time.h>
 #include <Wire.h>
 #include <RTClib.h>
-#include <RTC_DS3231.h>
+#include "ds3231.h"
+#include "rtc_ds3231.h"
 
-RTC_DS3231 RTC;
+//RTC_DS3231 RTC;
 
 
 // Define the SS pin
@@ -71,30 +72,53 @@ unsigned long nextTime = 0;
   int BaseDayNo, LastDayOfSchool;
 
 
+
+DateTime GetDateTimeNow() {
+  /*
+  time_t t = now();
+  DateTime dt = DateTime(year(t),month(t),day(t),hour(t),minute(t),second(t)) ;
+  dt = DateTime( dt.unixtime() + 3600L );
+  */
+  struct ts t;
+  DS3231_get(&t);
+  DateTime dt = DateTime(t.year-108,t.mon,t.mday,t.hour,t.min,t.sec);
+  return dt;
+}
+
+
 void setup()
 {
+  DS3231_init(DS3231_INTCN);
   BaseDayNo = GetJD(2015,8,19);
   LastDayOfSchool = GetJD(2016,6,2);
 
   Wire.begin();
   Serial.begin(9600);
   
-  RTC.begin();
+  //RTC.begin();
 
-  if (! RTC.isrunning()) {
+  if ( timeStatus()!=timeSet ) { // ! RTC.isrunning()) {
     Serial.println("RTC is NOT running!");
     // following line sets the RTC to the date & time this sketch was compiled
-    RTC.adjust(DateTime(__DATE__, __TIME__));
+    //RTC.adjust(DateTime(__DATE__, __TIME__));
+    DateTime dt = DateTime(__DATE__, __TIME__);
+    /*time_t t = makeTime(dt);
+    uint8_t _hour = dt.hour;
+    int _minute=0;
+    int _second=0; int _day = 0; int _year = 0;*/
+    setTime(dt.hour(),dt.minute(),dt.second(),dt.day(),dt.month(),dt.year()); // CAUTION:
   }
   else
-    Serial.println("RTC is running.");
+    Serial.println("Time is running.");
 
-  DateTime now = RTC.now();
+  DateTime now = GetDateTimeNow(); // RTC.now();
   DateTime compiled = DateTime(__DATE__, __TIME__);
   if (now.unixtime() < compiled.unixtime()) {
     Serial.println("RTC is older than compile time!  Updating");
+    /*
     RTC.adjust(DateTime(__DATE__, __TIME__));
     now = RTC.now();
+    */
   } 
   else
     Serial.println("RTC time > complie time. No change to RTC."); 
@@ -155,7 +179,7 @@ unsigned long dateCount = 0;
 bool alwaysscroll = false;
 void loop()
 {
-  DateTime now = RTC.now();
+  DateTime now = GetDateTimeNow(); //RTC.now();
   if(now.unixtime()>DSTends.unixtime() && now.unixtime()<DSTbegins.unixtime()) {
     // If not DST subtract an hour.
     now = DateTime( now.unixtime() - 3600L );
@@ -202,12 +226,13 @@ void loop()
   ShowDate(false, 2);
 }    
 void ShowDate(bool show, int display) {
-  DateTime now = RTC.now();
+  
+  DateTime now = GetDateTimeNow(); // RTC.now();
   if(now.unixtime()>DSTends.unixtime() && now.unixtime()<DSTbegins.unixtime()) {
     // If not DST subtract an hour.
     now = DateTime( now.unixtime() - 3600L );
   }
-  int tempF = (int)(RTC.getTempAsFloat()*9.0/5.0+32.0);
+  int tempF = 70; // (int)(RTC.getTempAsFloat()*9.0/5.0+32.0);
   int TheDaysLeft = GetDaysLeft( now.year(), now.month(), now.day(), now.hour(), now.minute() );
   //TheDaysLeft = tempF;
   if(TheDaysLeft>=0 && display>1) {
@@ -310,15 +335,16 @@ int GetDaysLeft(int year_, int month_, int day_, int hour_, int minute_ ) {
     int jd, y, m, d;
     GetGregorian(jd,&y,&m,&d); 
     */
+    int maxArr = sizeof(DL2015_2016);
     if(JulianDayNo>=BaseDayNo) {
       OffsetDayNo = JulianDayNo-BaseDayNo;
-      if(OffsetDayNo>=0 && OffsetDayNo<=180 ) {
+      if(OffsetDayNo>=0 && OffsetDayNo<=maxArr ) {
         r = DL2015_2016[OffsetDayNo];
         time = hour_*100+minute_;
         if(time>=1440)
           r = DL2015_2016[OffsetDayNo+1];
       }
-      if(OffsetDayNo>180)
+      if(OffsetDayNo>maxArr)
         r = 0;
     }
   }
