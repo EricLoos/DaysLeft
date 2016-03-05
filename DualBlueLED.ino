@@ -357,18 +357,31 @@ int GetDaysLeft(int pos) {
   return r;
 }
 /*
-http://aa.usno.navy.mil/faq/docs/JD_Formula.php
+http://forum.arduino.cc/index.php?topic=94925.0
 */
-
+long JulianDate(int year, int month, int day)
+{
+  long centuries = year/100;
+  long leaps = centuries/4;                              
+  long leapDays = 2 - centuries + leaps;         // note is negative!!
+  long yearDays = 365.25 * (year + 4716);     // days until 1 jan this year
+  long monthDays = 30.6001 * (month + 1);    // days until 1st month
+  long jd = leapDays + day + monthDays + yearDays -1524.5;
+  return jd;
+}
 int GetJD( int YEAR, int MONTH, int DAY ) {
+  return JulianDate(YEAR,MONTH,DAY);
+  /*
+  http://aa.usno.navy.mil/faq/docs/JD_Formula.php
   int I = YEAR;
   int J = MONTH;
   int K = DAY;
   return  K-32075+1461*(I+4800+(J-14)/12)/4+367*(J-2-(J-14)/12*12)
           /12-3*((I+4900+(J-14)/12)/100)/4;
+          */
 }
 
-
+/*
 int GetGregorian( int JD, int* YEAR, int* MONTH, int* DAY ) {
   
   int I,J,K,L,N;
@@ -388,7 +401,7 @@ int GetGregorian( int JD, int* YEAR, int* MONTH, int* DAY ) {
     *MONTH = J;
     *DAY = K;  
 }
-
+*/
 
 int charPos = 0;
 void _delay(unsigned long ms) {
